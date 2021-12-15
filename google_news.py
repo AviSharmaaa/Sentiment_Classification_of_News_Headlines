@@ -1,6 +1,9 @@
+import os.path
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 import requests
+
+ROOT = "https://www.google.com/"
 
 hdrs = {
     'User-Agent':
@@ -13,34 +16,37 @@ hdrs = {
     'Connection': 'keep-alive'
 }
 
-root = "https://www.google.com/"
-link = "https://www.google.com/search?q=cds+bipin+rawat&rlz=1C1CHBF_enIN912IN912&tbm=nws&sxsrf=AOaemvLePTsPOGUWiTuUmVM19M3rbk8aJQ:1639163511323&source=lnt&tbs=qdr:d&sa=X&ved=2ahUKEwj5wsf299n0AhUMzzgGHZHCAP4QpwV6BAgBECE&biw=540&bih=746&dpr=1.25"
 
+def delete_file():
+    flag = os.path.exists('data.csv')
+
+    if flag == True:
+        f = open("data.csv",'a')
+        f.seek(0)
+        f.truncate()
 
 def get_news(link):
     req = Request(link, headers=hdrs)
     webpage = urlopen(req).read()
+    document = open('data.csv', 'a')
+    document.write('{} \n'.format('Heading'))
     with requests.Session():
         soup = BeautifulSoup(webpage, "html5lib")
         for i in range(10):
-            get_headlines(soup)
+            get_headlines(soup,document)
             go_to_next_page(soup)
+    document.close()
 
 
 def go_to_next_page(soup):
     next_page = soup.find('a', attrs={'class': 'nBDE1b G5eFlf'})
     next_page = (next_page['href'])
-    link = root + next_page
+    link = ROOT + next_page
 
 
-def get_headlines(soup):
+def get_headlines(soup,document):
     for item in soup.find_all('h3', attrs={'class': 'zBAuLc l97dzf'}):
         title = (item.find('div', attrs={'class':
                                          'BNeawe vvjwJb AP7Wnd'})).get_text()
         title = title.replace(",", "")
-        document = open('data.csv', 'a')
-        document.write('{}, \n'.format(title))
-        document.close()
-
-
-get_news(link)
+        document.write('{} \n'.format(title))

@@ -1,5 +1,14 @@
+import os.path
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as Sentiment
+
+def delete_file():
+    flag = os.path.exists('data.csv')
+
+    if flag:
+        open_file = open("data.csv",'a')
+        open_file.seek(0)
+        open_file.truncate()
 
 def get_sentiment():
     data_set = pd.read_csv('data.csv',encoding='cp1252')

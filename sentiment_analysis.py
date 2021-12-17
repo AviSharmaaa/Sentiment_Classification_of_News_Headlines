@@ -1,5 +1,8 @@
+from enum import unique
 import pickle
+import time
 import pandas as pd
+from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -15,21 +18,25 @@ def train_model():
     counts = dataset['Lable'].value_counts()
     print(counts)
 
-
     x_data = dataset['Heading ']
     y_data = dataset['Lable']
 
-    x_train,x_test,y_train,y_test = train_test_split(x_data,y_data,test_size=0.2)
+    x_train,x_test,y_train,y_test = train_test_split(x_data,y_data,test_size=0.3)
 
     vect = CountVectorizer(max_features=2000,binary=True)
 
     x_train_vect = vect.fit_transform(x_train).toarray()
 
+    sm = SMOTE()
+
+    x_train_res,y_train_res = sm.fit_resample(x_train_vect,y_train)
+    
+
     vect_file = 'vectorize.pickle'
     pickle.dump(vect,open(vect_file,'wb'))
 
 
-    model = nb.fit(x_train_vect,y_train)
+    model = nb.fit(x_train_res,y_train_res)
 
     mod_file = 'classification.model'
     pickle.dump(model,open(mod_file,'wb'))
@@ -39,7 +46,8 @@ def train_model():
 
     y_pred = nb.predict(x_test_vect)
 
-    print("\t\t\t\t\tModel Trainig Complete!!!!\n")
-    print("\t\t\t\t\tAccuracy: {:.2f}%".format(accuracy_score(y_test,y_pred)*100))
-    print("\n\t\t\t\t\tF1 Score: {:.2f}%".format(f1_score(y_test,y_pred)*100))
-    print("\n\t\t\t\t\tConfusion Matrix: \n",confusion_matrix(y_test,y_pred))
+    print("Model Trainig Complete!!!!\n")
+    time.sleep(2)
+    print("Accuracy: {:.2f}%".format(accuracy_score(y_test,y_pred)*100))
+    print("\nF1 Score: {:.2f}%".format(f1_score(y_test,y_pred)*100))
+    print("\nConfusion Matrix: \n",confusion_matrix(y_test,y_pred))

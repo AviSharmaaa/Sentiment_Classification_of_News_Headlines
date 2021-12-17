@@ -1,24 +1,32 @@
 import pandas as pd
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from nltk.sentiment.vader import SentimentIntensityAnalyzer as Sentiment
 
-def start_vader():
-    data = pd.read_csv("data.csv",encoding='cp1252')
+def get_sentiment():
+    data_set = pd.read_csv('data.csv',encoding='cp1252')
 
-    analyzer = SentimentIntensityAnalyzer()
-
+    sentiment = Sentiment()
     negative = []
-    neutral = []
     positive = []
+    neutral = []
+    compound = []
 
-    for news_heading in range(data.shape[0]):
-        tittle = data.iloc[news_heading,0]
-        title_analyzed = analyzer.polarity_scores(tittle)
-        negative.append(title_analyzed['neg'])
-        neutral.append(title_analyzed['neu'])
-        positive.append(title_analyzed['pos'])
+    for head_line in range(data_set.shape[0]):
+        heading = data_set.iloc[head_line,0]
+        polarity = sentiment.polarity_scores(heading)
+        negative.append(polarity['neg'])
+        positive.append(polarity['pos'])
+        neutral.append(polarity['neu'])
+        compound.append(polarity['compound'])
 
-    data['Negative'] = negative
-    data['Neutral'] = neutral
-    data['Positive'] = positive
 
-    print(data.head(10))
+    data_set['Negative'] = negative
+    data_set['Neutral'] = neutral
+    data_set['Positive'] = positive
+    data_set['compound'] = compound
+    data_set['Lable'] = 0
+
+    data_set.loc[data_set['compound'] > 0, 'Lable'] = 1
+    data_set.loc[data_set['compound'] < 0,'Lable'] = -1
+
+    data = data_set[['Heading ', 'Lable']]
+    data.to_csv('data_with_labels.csv',mode='a',encoding='utf-8',index=False)

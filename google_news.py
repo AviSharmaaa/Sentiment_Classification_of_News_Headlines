@@ -20,19 +20,20 @@ hdrs = {
 def delete_file():
     flag = os.path.exists('data.csv')
 
-    if flag == True:
-        f = open("data.csv",'a')
-        f.seek(0)
-        f.truncate()
+    if flag:
+        open_file = open("data.csv",'a')
+        open_file.seek(0)
+        open_file.truncate()
 
 def get_news(link):
     req = Request(link, headers=hdrs)
     webpage = urlopen(req).read()
     document = open('data.csv', 'a')
     document.write('{} \n'.format('Heading'))
+     
     with requests.Session():
         soup = BeautifulSoup(webpage, "html5lib")
-        for i in range(10):
+        for _ in range(100):
             get_headlines(soup,document)
             go_to_next_page(soup)
     document.close()
@@ -48,5 +49,10 @@ def get_headlines(soup,document):
     for item in soup.find_all('h3', attrs={'class': 'zBAuLc l97dzf'}):
         title = (item.find('div', attrs={'class':
                                          'BNeawe vvjwJb AP7Wnd'})).get_text()
-        title = title.replace(",", "")
+        title = title.lower()
+        title = title.replace(',','')
+        title = title.replace(':',"")
+        title = title.replace('%','')
+        title = title.replace(' ...','')
+        title = title.replace("'","")
         document.write('{} \n'.format(title))

@@ -10,7 +10,8 @@ def test_manually(str1):
     headline = headline.replace(',','')
     headline = headline.replace(':',"")
     headline = headline.replace('%','')
-    headline = headline.replace(' ...','')
+    headline = headline.replace('?','')
+
     inp = []
     temp = ""
     for i in range(len(headline)):
@@ -30,7 +31,7 @@ def test_manually(str1):
             count_pos+=1
         else:
             count_neg+=1
-    
+
     if count_pos > count_neg:
         print("\nIt is positive news\n")
     else:
@@ -55,11 +56,10 @@ def start():
             news_headline = input("Enter a news headline: ")
             test_manually(news_headline)
             print("\n")
-                     
+
         elif choice == '2':
             flag = False
         else:
             print("Wrong Choice\n")
-
 
 start()

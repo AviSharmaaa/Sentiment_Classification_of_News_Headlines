@@ -1,4 +1,3 @@
-from enum import unique
 import pickle
 import time
 import pandas as pd
@@ -15,10 +14,7 @@ def train_model():
 
     dataset = dataset[dataset['Lable'] != 0]
 
-    counts = dataset['Lable'].value_counts()
-    print(counts)
-
-    x_data = dataset['Heading ']
+    x_data = dataset['Headline']
     y_data = dataset['Lable']
 
     x_train,x_test,y_train,y_test = train_test_split(x_data,y_data,test_size=0.3)
@@ -30,7 +26,6 @@ def train_model():
     sm = SMOTE()
 
     x_train_res,y_train_res = sm.fit_resample(x_train_vect,y_train)
-    
 
     vect_file = 'vectorize.pickle'
     pickle.dump(vect,open(vect_file,'wb'))
